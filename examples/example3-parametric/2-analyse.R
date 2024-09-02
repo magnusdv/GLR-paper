@@ -3,7 +3,7 @@
 library(pedsuite)
 library(ggplot2)
 library(patchwork)
-source("utils.R") # quickpng and xtable wrapper
+source("../utils.R") # quickpng and xtable wrapper
 
 
 # Load data
@@ -39,7 +39,7 @@ triangle1 = triangle1 +
   theme(legend.text = ggtext::element_markdown(),
         plot.margin = margin(l = 0.2, r = 0.2, unit ="cm"))
 triangle1
-ggplot2::ggsave(triangle1, filename = "triangle1.pdf", h = 4, w = 4) 
+# ggplot2::ggsave(triangle1, filename = "triangle1.pdf", h = 4, w = 4) 
 
 # Patchwork: pedigree + triangle
 ped_swapped_png = grid::rasterGrob(png::readPNG("ped_swapped.png"))
@@ -53,7 +53,10 @@ plot1
 ggplot2::ggsave(plot1, filename = "combined1.pdf", h = 5.2, w = 10) 
 
 
-# Corrected version -------------------------------------------------------
+####################
+
+
+# Second plot: Corrected version after swapping B <-> D ------------------------
 
 y = x |> 
   relabel(old = c("B", "D"), new = c("D", "B")) |> 
