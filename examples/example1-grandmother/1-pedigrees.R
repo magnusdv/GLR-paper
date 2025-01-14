@@ -11,24 +11,28 @@ peds = list(
   Ped3 = list(ped, singleton("B", sex = 2))
 )
 
-# Save
+# Save (for simulations)
 saveRDS(peds, "peds.rds")
-# peds = readRDS("peds.rds")
-
 
 # Quick glance
 plotPedList(peds, hatched = c("A", "B", "C"))
 
 
+# Plot for publication ---------------------------------------------------
+
+# Move singleton (looks better)
+pp = peds
+pp$Ped3 = rev(pp$Ped3)
+
 # Titles used in publication plot
 hyptit = c("H1: A grandmother of B", "H2: A and B unrelated")
 pedtit = c("Ped1", "Ped2", "Ped3")
 
-# Main plot. USED IN PUBLICATION
-quickpng("grandmother-peds.png", w = 6, h = 2.5, {
-         plotPedList(peds, hatched = c("A", "B", "C"), margins = c(1, 1.5, 4.1, 1.5),
-                     groups = list(1:2, 3:4), titles = character(2), fmar = 0.02)
-         mtext(pedtit, line = 1.7, at = c(-1.29, -0.23, 1.05), cex = 0.75, font = 2)
-         mtext(hyptit, line = 2.8, at = c(-0.71, 1.05), cex = 0.9)
-})
-
+# Create pdf
+pdf("grandmother-peds.pdf", width = 6, height = 2.5)
+plotPedList(pp, hatched = c("A", "B", "C"), margins = c(1, 1.5, 1, 1.5),
+            fmar = 0.02, groups = list(1:2, 3:4), titles = hyptit, 
+            grouptitlesArgs = list(line = 1.1, cex = 0.9, font = 1))
+# Add pedigree titles
+mtext(pedtit, line = 1.7, at = c(-0.1, 0.59, 1.45), cex = 0.75, font = 2)
+dev.off()

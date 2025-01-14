@@ -9,13 +9,13 @@ source("../utils.R")
 dvi = readRDS("dvi.rds")
 
 # Plot
-plotDVI(dvi, marker = 1)
+plotDVI(dvi, marker = 1, style = 2)
 
-# Create figure
-quickpng("dviEx-uncropped.png", w = 4.8, h = 3.5, 
-         plotDVI(dvi, labs = leaves, cex.main = 1.2, widths = c(.3,.7)))
+# Create figure for paper
+pdf("dvi-uncropped.pdf", width = 4.8, height = 3.5)
+plotDVI(dvi, labs = leaves, widths = c(.3,.7), style = 2)
+dev.off()
 
 # Crop whitespace
-image_read("dviEx-uncropped.png") |> 
-  image_trim() |> 
-  image_write("dviEx-cropped.png")
+# Requires pdfcrop: tinytex::tlmgr_install('pdfcrop')
+system("pdfcrop dvi-uncropped.pdf dvi-cropped.pdf")

@@ -1,7 +1,7 @@
 library(dvir)
 library(xtable)
 
-source("utils.R")
+source("../utils.R")
 
 # Load data
 dvi = readRDS("dvi.rds")
@@ -16,21 +16,32 @@ xtable(lr$LRmatrix, digits = 2) |> print(floating = F, booktabs = T)
 
 # Joint table
 j = dviJoint(dvi, verbose = F)
-head(j$joint)
+head(j)
 
 # Abbreviated for paper
-jj = j$joint[c(1:11, 34), 1:4]
-xtable(jj, digits = 4) |> print(floating = F, booktabs = T)
+jj = j[c(1:11, 34), 1:4]
+
+# Change loglik to log10-lik (requested by reviewer)
+jj$loglik = log10(exp(jj$loglik))
+
+# Format 
+xtable(jj, digits = 2) |> print(floating = F, booktabs = T)
+
+# Minor manual tweaks for paper:
+# 1. Replace * by $\;*$
+# 2. Insert after row 9: \vdots &&&& \\ 
 
 # GLR matrix
-j$GLRmatrix
-xtable(j$GLRmatrix, digits = -2)
+glr = dvir:::pairwiseGLR(dvi, jointTable = j)
+xtable(glr$GLRmatrix, digits = -2)
 
 # GLR score for V1 = M1
-exp(j$joint$loglik[1] - j$joint$loglik[3])
+exp(j$loglik[1] - j$loglik[3])
+10^(jj$loglik[1] - jj$loglik[3])
 
 # GLR score for {V2,V3} = {M2,M3}
-exp(j$joint$loglik[1] - j$joint$loglik[5])
+exp(j$loglik[1] - j$loglik[5])
+10^(jj$loglik[1] - jj$loglik[5])
 
 
 

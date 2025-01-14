@@ -41,15 +41,16 @@ sim1 = gmSim(peds, truePed = 1, nsim = nsim, seed = seed)
 sim2 = gmSim(peds, truePed = 2, nsim = nsim, seed = seed)
 sim3 = gmSim(peds, truePed = 3, nsim = nsim, seed = seed)
 
+# Collect
 simdat = do.call(rbind, list(sim1, sim2, sim3))
 simdat$True = rep(c("Ped1", "Ped2", "Ped3"), each = nsim)
 simdat$Concl = ifelse(simdat$GLR <= 1e-4, "H2", ifelse(simdat$GLR >= 1e4, "H1", "Inc"))
 
-lim = function(x) range(c(-6, 6, max(x), max(-20, min(x))))
-br4 = function(lim) c(seq(4,lim[1], by=-4), seq(4,lim[2], by=4))
-
 
 # Plot --------------------------------------------------------------------
+
+lim = function(x) range(c(-6, 6, max(x), max(-20, min(x))))
+br4 = function(lim) c(seq(4, lim[1], by = -4), seq(4, lim[2], by = 4))
 
 ggplot(simdat, aes(log10(LR13), log10(LR23))) + 
   theme_bw(base_size = 12) +
@@ -63,31 +64,35 @@ ggplot(simdat, aes(log10(LR13), log10(LR23))) +
   annotate("segment", y = -Inf, x = 4, yend = 4, color = 3, linetype = 2, linewidth = 1) +
   geom_point(alpha = 0.3, size = 0.5) + 
   facet_wrap(~True, scales = "free") +
-  labs(x = expression(log~LR[1:3]),
-       y = expression(log~LR[2:3]))+
+  labs(x = expression(lg~LR[1:3]),
+       y = expression(lg~LR[2:3]))+
   scale_x_continuous(limits = lim, breaks = br4) +
   scale_y_continuous(limits = lim, breaks = br4) + 
   theme(strip.background = element_blank(),
         strip.text = element_text(face = 2, size = 12),
         panel.grid = element_blank()) 
 
-ggsave("grandmother-sims.png", height = 3, width = 8, dpi = 300)
+# Save as pdf
+ggsave("grandmother-sims.pdf", height = 3, width = 8, dpi = 300)
 
+# Save as png
+# ggsave("grandmother-sims.png", height = 3, width = 8, dpi = 300)
 
 
 # Table for latex ---------------------------------------------------------
 
-
 library(xtable)
 
 foo = function(x){
-  p1 = length(x[x >= 4])
-  p2 = length(x[x <=  -4] )
+  p1  = length(x[x >= 4])
+  p2  = length(x[x <= -4] )
   pNO = length(x[x > -4 & x < 4])
   c(H1 = p1, H2 = p2, Inconclusive = pNO)/length(x)
 }
 
-GLR = data.frame(Ped1 = sim1$GLR, Ped2 = sim2$GLR, Ped3 = sim3$GLR)
+GLR = data.frame(Ped1 = sim1$GLR, 
+                 Ped2 = sim2$GLR, 
+                 Ped3 = sim3$GLR)
 
 tab = apply(log10(GLR), 2, foo)
 xtable(tab, caption = "", label = "tab:rates", digits = 3)
