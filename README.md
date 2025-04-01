@@ -6,6 +6,40 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-This repository contains the R scripts and datasets used in the analyses
+This repository contains R scripts reproducing all figures and analyses
 presented in the paper *Kinship cases with partially specified
-hypotheses* (Egeland & Vigeland, in progress).
+hypotheses* (Egeland & Vigeland, FSI:Genetics, 2025,
+<https://doi.org/10.1016/j.fsigen.2025.103270>).
+
+For example, the following code creates and plots the pedigrees of the
+*Motivational example*, where the aim is to test if individual A is the
+grandmother of individual B:
+
+``` r
+library(pedtools)
+
+# Undisputed pedigree part
+ped = linearPed(2) |> relabel(c("GF", "A", "FA", "MO1", "C"))
+
+# Three possible pedigrees
+peds = list(
+  Ped1 = ped |> addDaughter(c("FA", "MO1"), id = "B") |> reorderPed(c("B", "C")),
+  Ped2 = ped |> addDaughter(c("FA", "MO2"), id = "B") |> reorderPed(c("B", "C")),
+  Ped3 = list(ped, singleton("B", sex = 2))
+)
+
+# Quick glance: 
+# plotPedList(peds)
+
+# Plot
+plotPedList(peds, hatched = c("A", "B", "C"), 
+            labs = c("A", "B", "C"),
+            groups = list(1:2, 3:4), 
+            titles = c("H1: A grandmother of B", "H2: A and B unrelated"), 
+            grouptitlesArgs = list(line = 1.1, cex = 0.9, font = 1))
+```
+
+<img src="README_files/figure-gfm/unnamed-chunk-2-1.png" width="80%" style="display: block; margin: auto;" />
+
+Complete code (reproducing the stylised published version) can be found
+in the folder `example1-grandmother` of this repository.
